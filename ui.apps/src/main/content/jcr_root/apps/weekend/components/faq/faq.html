@@ -1,0 +1,37 @@
+<!-- Bind the Sling Model -->
+<sly data-sly-use.model="com.weekend.core.models.FaqModel" />
+
+<!-- Load the custom client library (JS + CSS) for this component -->
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='weekend.components.faq'}" />
+</sly>
+
+<div class="faq-container" data-sly-test="${model.faqList}">
+    <!-- Component Title -->
+    <div class="faq-title-header">
+        <h2>FAQ</h2>
+    </div>
+
+    <!-- FAQ Collapsible Accordions List -->
+    <div class="faq-list">
+        <sly data-sly-list.faq="${model.faqList}">
+            <div class="faq-item">
+                <div class="faq-header" tabindex="0">
+                    <span class="faq-question-text">${faq.question}</span>
+                    <span class="faq-icon-indicator"></span>
+                </div>
+                <div class="faq-panel">
+                    <div class="faq-panel-content">
+                        ${faq.answer}
+                    </div>
+                </div>
+            </div>
+        </sly>
+    </div>
+</div>
+
+<!-- Placeholder for edit mode when component is unconfigured -->
+<div data-sly-test.isEmpty="${!model.faqList}" 
+     class="cq-placeholder" 
+     data-emptytext="FAQ Component (Click Wrench Icon to Configure)">
+</div>

@@ -1,0 +1,28 @@
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.css @ categories='weekend.characterpanel'}"/>
+    <sly data-sly-call="${clientlib.js  @ categories='weekend.characterpanel'}"/>
+</sly>
+
+<sly data-sly-use.model="com.weekend.core.models.CharacterPanelModel"/>
+
+<div class="character-panel"
+     data-sly-test="${model.characters}"
+     data-sly-list.item="${model.characters}">
+
+    <div class="character-card">
+
+        <img
+                src="${item.valueMap.fileReference @ context='uri'}"
+                loading="lazy"
+                alt="${item.valueMap.characterName @ context='html'}">
+
+        <h3>${item.valueMap.characterName @ context='html'}</h3>
+
+        <p>${item.valueMap.realName @ context='html'}</p>
+
+    </div>
+
+</div>
+
+
+

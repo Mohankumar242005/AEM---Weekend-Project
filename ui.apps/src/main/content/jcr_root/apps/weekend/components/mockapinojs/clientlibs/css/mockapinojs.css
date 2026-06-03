@@ -1,0 +1,149 @@
+/* Server-side No-JS Mock API Directory Styles */
+.mock-api-nojs-container {
+    margin: 30px 0;
+    font-family: 'Inter', sans-serif;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.04);
+}
+
+/* Header section */
+.mock-api-nojs-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-bottom: 2px dashed #e2e8f0;
+    padding-bottom: 20px;
+    margin-bottom: 28px;
+}
+
+.mock-api-nojs-header-section h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.5px;
+}
+
+.mock-api-nojs-source-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    background: #ecfdf5;
+    padding: 6px 14px;
+    border-radius: 30px;
+    border: 1px solid #d1fae5;
+    box-shadow: 0 2px 5px rgba(5, 150, 105, 0.05);
+}
+
+/* Error alert box */
+.mock-api-nojs-error-alert {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #b91c1c;
+    padding: 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.03);
+}
+
+/* Cards Grid */
+.mock-api-nojs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 28px;
+}
+
+/* Single User Profile Card */
+.mock-api-nojs-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.015);
+}
+
+.mock-api-nojs-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 30px rgba(15, 23, 42, 0.08);
+    border-color: #059669;
+}
+
+/* Card Header */
+.mock-api-nojs-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+}
+
+.mock-api-nojs-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.mock-api-nojs-card-title-group h3 {
+    margin: 0 0 4px 0;
+    font-size: 17px;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.3px;
+}
+
+.mock-api-nojs-company {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+/* Card Body Details */
+.mock-api-nojs-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.mock-api-nojs-detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.mock-api-nojs-label {
+    color: #64748b;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.mock-api-nojs-val {
+    color: #334155;
+    font-weight: 600;
+    word-break: break-word;
+    max-width: 65%;
+    text-align: right;
+}

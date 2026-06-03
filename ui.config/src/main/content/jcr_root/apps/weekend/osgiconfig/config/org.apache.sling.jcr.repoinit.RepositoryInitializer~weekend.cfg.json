@@ -1,0 +1,7 @@
+{
+    "scripts": [
+        "create path (sling:OrderedFolder) /content/dam/weekend",
+        "create path (nt:unstructured) /content/dam/weekend/jcr:content",
+        "set properties on /content/dam/weekend/jcr:content\n  set cq:conf{String} to /conf/weekend\n  set jcr:title{String} to \"Weekend Project\"\nend"
+    ]
+}

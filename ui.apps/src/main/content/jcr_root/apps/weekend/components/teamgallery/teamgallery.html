@@ -1,0 +1,28 @@
+<!-- Link component to the Sling Model -->
+<sly data-sly-use.model="com.weekend.core.models.TeamGalleryModel" />
+
+<div class="team-gallery-component">
+    <!-- Render Title -->
+    <h2 data-sly-test="${model.galleryTitle}">${model.galleryTitle}</h2>
+
+    <!-- Render Multifield Cards -->
+    <div class="team-gallery-list" data-sly-list.member="${model.members}">
+        <div class="team-member-card">
+            <!-- Member Photo -->
+            <div class="member-photo" data-sly-test="${member.imagePath}">
+                <img src="${member.imagePath @ context='uri'}" alt="${member.fullName @ context='html'}" />
+            </div>
+            <!-- Member Text info -->
+            <div class="member-details">
+                <h3 class="member-name">${member.fullName @ context='html'}</h3>
+                <p class="member-role">${member.role @ context='html'}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder for when the component is placed on a page but not yet configured -->
+<div data-sly-test.isEmpty="${!model.galleryTitle && !model.members}" 
+     class="cq-placeholder" 
+     data-emptytext="Team Gallery Component (Click Wrench Icon to Configure)">
+</div>

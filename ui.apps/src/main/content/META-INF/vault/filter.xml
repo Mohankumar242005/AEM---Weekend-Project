@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/apps/weekend/clientlibs"/>
+    <filter root="/apps/weekend/components"/>
+    <filter root="/apps/weekend/i18n"/>
+</workspaceFilter>

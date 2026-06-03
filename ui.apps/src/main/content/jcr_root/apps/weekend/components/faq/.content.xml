@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="FAQ Component"
+    jcr:description="Collapsible FAQ Accordion with Expand All / Collapse All options."
+    componentGroup="Weekend Project - Content"/>

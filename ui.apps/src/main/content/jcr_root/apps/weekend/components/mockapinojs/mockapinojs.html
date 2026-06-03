@@ -1,0 +1,50 @@
+<!-- Bind Sling Model adapted from request -->
+<sly data-sly-use.model="com.weekend.core.models.MockApiNoJsModel" />
+
+<!-- Load Clientlib CSS (No JS) -->
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.css @ categories='weekend.components.mockapinojs'}" />
+</sly>
+
+<div class="mock-api-nojs-container" data-sly-test="${model.cards || model.errorMessage}">
+    <!-- Header Banner -->
+    <div class="mock-api-nojs-header-section">
+        <h2>${model.title}</h2>
+        <span class="mock-api-nojs-source-badge">Local Loopback Request: ${model.servletUrl}</span>
+    </div>
+
+    <!-- Error state alert -->
+    <div class="mock-api-nojs-error-alert" data-sly-test="${model.errorMessage}">
+        <strong>Integration Error:</strong> ${model.errorMessage}
+    </div>
+
+    <!-- Main cards display -->
+    <div data-sly-test="${!model.errorMessage && model.cards}">
+        <!-- Cards grid -->
+        <div class="mock-api-nojs-grid">
+            <sly data-sly-list.card="${model.cards}">
+                <div class="mock-api-nojs-card">
+                    <div class="mock-api-nojs-card-header">
+                        <div class="mock-api-nojs-avatar">${card.initials}</div>
+                        <div class="mock-api-nojs-card-title-group">
+                            <h3>${card.title}</h3>
+                            <p class="mock-api-nojs-company" data-sly-test="${card.subtitle}">${card.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="mock-api-nojs-card-body" data-sly-list.prop="${card.properties}">
+                        <div class="mock-api-nojs-detail-item">
+                            <span class="mock-api-nojs-label">${prop.key}:</span>
+                            <span class="mock-api-nojs-val">${prop.value}</span>
+                        </div>
+                    </div>
+                </div>
+            </sly>
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder for unconfigured editor view -->
+<div data-sly-test.isEmpty="${!model.cards && !model.errorMessage}" 
+     class="cq-placeholder" 
+     data-emptytext="Mock API No-JS Component (Click Wrench to configure properties)">
+</div>

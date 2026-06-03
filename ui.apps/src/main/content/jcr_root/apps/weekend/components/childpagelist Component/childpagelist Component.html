@@ -1,0 +1,89 @@
+<sly data-sly-use.model="com.weekend.core.models.ChildPageListModel" />
+
+<!-- Simple CSS styles embedded directly for quick visual integration -->
+<style>
+    .child-page-list-cmp {
+        font-family: 'Inter', sans-serif;
+        margin: 20px 0;
+        padding: 15px;
+        background: #fdfdfd;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+    }
+    .child-page-list-cmp h2 {
+        font-size: 18px;
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #005a9c;
+        padding-bottom: 5px;
+        display: inline-block;
+    }
+    .child-page-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .child-page-card {
+        background: #ffffff;
+        border: 1px solid #eaeaea;
+        border-radius: 6px;
+        padding: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .child-page-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border-color: #005a9c;
+    }
+    .child-page-card h3 {
+        font-size: 16px;
+        color: #005a9c;
+        margin: 0 0 8px 0;
+    }
+    .child-page-card p {
+        font-size: 13px;
+        color: #666;
+        margin: 0 0 15px 0;
+        line-height: 1.4;
+    }
+    .child-page-btn {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: bold;
+        color: #ffffff;
+        background: #005a9c;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        align-self: flex-start;
+    }
+    .child-page-btn:hover {
+        background: #004070;
+    }
+</style>
+
+<div class="child-page-list-cmp" data-sly-test="${model.parentPath}">
+    <h2>Child Pages under: ${model.parentPath}</h2>
+    
+    <!-- Render the Grid list -->
+    <div class="child-page-grid" data-sly-list.page="${model.childPages}">
+        <div class="child-page-card">
+            <div>
+                <h3>${page.title}</h3>
+                <p>${page.description}</p>
+            </div>
+            <a class="child-page-btn" href="${page.path}.html">Read More</a>
+        </div>
+    </div>
+</div>
+
+<!-- Editor Placeholder Panel -->
+<div data-sly-test.isEmpty="${!model.parentPath || !model.childPages}" 
+     class="cq-placeholder" 
+     data-emptytext="Child Page List Component (Click Wrench to select Parent Path)">
+</div>

@@ -1,0 +1,61 @@
+<!-- Bind Sling Model -->
+<sly data-sly-use.model="com.weekend.core.models.MockApiModel" />
+
+<!-- Load Clientlib CSS and JS -->
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='weekend.components.mockapi'}" />
+</sly>
+
+<div class="mock-api-container" data-sly-test="${model.cards || model.errorMessage}">
+    <!-- Header Banner -->
+    <div class="mock-api-header-section">
+        <h2>Users Profile Directory</h2>
+        <span class="mock-api-source-badge">Source API: ${model.apiEndpoint}</span>
+    </div>
+
+    <!-- Error state alert -->
+    <div class="mock-api-error-alert" data-sly-test="${model.errorMessage}">
+        <strong>Integration Error:</strong> ${model.errorMessage}
+    </div>
+
+    <!-- Main profiles display -->
+    <div data-sly-test="${!model.errorMessage && model.cards}">
+        <!-- Search bar layout -->
+        <div class="mock-api-search-wrapper">
+            <input type="text" class="mock-api-search-input" placeholder="Search profiles by name, email or company..." />
+            <span class="mock-api-search-icon">🔍</span>
+        </div>
+
+        <!-- Cards grid -->
+        <div class="mock-api-grid">
+            <sly data-sly-list.card="${model.cards}">
+                <div class="mock-api-card">
+                    <div class="mock-api-card-header">
+                        <div class="mock-api-avatar">${card.initials}</div>
+                        <div class="mock-api-card-title-group">
+                            <h3>${card.title}</h3>
+                            <p class="mock-api-company" data-sly-test="${card.subtitle}">${card.subtitle}</p>
+                        </div>
+                    </div>
+                    <div class="mock-api-card-body" data-sly-list.prop="${card.properties}">
+                        <div class="mock-api-detail-item">
+                            <span class="mock-api-label">${prop.key}:</span>
+                            <span class="mock-api-val">${prop.value}</span>
+                        </div>
+                    </div>
+                </div>
+            </sly>
+        </div>
+
+        <!-- No results screen -->
+        <div class="mock-api-no-results" style="display: none;">
+            <p>No user profiles match your search criteria.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder for unconfigured editor view -->
+<div data-sly-test.isEmpty="${!model.cards && !model.errorMessage}" 
+     class="cq-placeholder" 
+     data-emptytext="Mock API Data Component (Click Wrench to configure apiEndpoint)">
+</div>

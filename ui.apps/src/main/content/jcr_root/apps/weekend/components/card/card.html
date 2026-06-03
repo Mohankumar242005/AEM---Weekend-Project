@@ -1,0 +1,6 @@
+<h1>${properties.title}</h1>
+<h4>${properties.textarea}</h4>
+
+<sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html"></sly>
+<sly data-sly-call="${clientLib.css @ categories='weekend.sample_dep'}" />
+<sly data-sly-call="${clientLib.js @ categories='weekend.sample_dep'}" />

@@ -1,0 +1,29 @@
+<!-- Bind the Sling Model -->
+<sly data-sly-use.model="com.weekend.core.models.CustomTabsModel" />
+
+<!-- Load the custom client library (JS + CSS) for this component -->
+<sly data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html">
+    <sly data-sly-call="${clientlib.all @ categories='weekend.components.customtabs'}" />
+</sly>
+
+<div class="custom-tabs-container" data-sly-test="${model.tabs}">
+    <!-- Tab Headers (Navigation selectors) -->
+    <ul class="custom-tabs-headers" data-sly-list.tab="${model.tabs}">
+        <li class="custom-tab-header-item ${tabList.first ? 'active' : ''}" data-tab-index="${tabList.index}">
+            ${tab.tabTitle}
+        </li>
+    </ul>
+
+    <!-- Tab Content Panels -->
+    <div class="custom-tabs-panels" data-sly-list.tab="${model.tabs}">
+        <div class="custom-tab-panel-item ${tabList.first ? 'active' : ''}" data-tab-index="${tabList.index}">
+            ${tab.tabContent}
+        </div>
+    </div>
+</div>
+
+<!-- Placeholder for edit mode when component is unconfigured -->
+<div data-sly-test.isEmpty="${!model.tabs}" 
+     class="cq-placeholder" 
+     data-emptytext="Custom Tabs Component (Click Wrench Icon to Configure)">
+</div>

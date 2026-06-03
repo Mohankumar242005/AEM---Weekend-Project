@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    jcr:primaryType="cq:Component"
+    jcr:title="Mock API Server-Side (No JS)"
+    jcr:description="Retrieves mock API data server-side via loopback servlet proxy request and renders it without any client-side JavaScript."
+    componentGroup="Weekend Project - Content"/>

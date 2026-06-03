@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+    <filter root="/conf/weekend" mode="merge"/>
+    <filter root="/content/weekend" mode="merge"/>
+    <filter root="/content/dam/weekend" mode="merge">
+        <exclude pattern="/content/dam/weekend(/.*)?"/>
+        <include pattern="/content/dam/weekend/jcr:content(/.*)?"/>
+    </filter>
+    <filter root="/content/dam/weekend/asset.jpg" mode="merge"/>
+    <filter root="/content/experience-fragments/weekend" mode="merge"/>
+</workspaceFilter>

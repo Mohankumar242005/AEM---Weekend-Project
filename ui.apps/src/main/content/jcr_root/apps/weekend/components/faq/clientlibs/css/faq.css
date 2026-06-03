@@ -1,0 +1,143 @@
+/* FAQ Component Styles */
+.faq-container {
+    margin: 30px 0;
+    font-family: 'Inter', sans-serif;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+/* Component Title Header */
+.faq-title-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.faq-title-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+}
+
+.faq-title-header h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 3px;
+    background-color: #005a9c;
+    border-radius: 2px;
+}
+
+/* FAQ Item styling */
+.faq-item {
+    border-bottom: 1px solid #edf2f7;
+}
+
+.faq-item:last-child {
+    border-bottom: none;
+}
+
+/* Accordion Header */
+.faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 8px;
+    cursor: pointer;
+    outline: none;
+    transition: background 0.2s;
+}
+
+.faq-header:focus-visible {
+    background: #f8fafc;
+    border-radius: 4px;
+}
+
+.faq-question-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    transition: color 0.2s ease-in-out;
+}
+
+.faq-header:hover .faq-question-text {
+    color: #005a9c;
+}
+
+/* Expand indicator arrow using CSS pseudo-elements */
+.faq-icon-indicator {
+    width: 20px;
+    height: 20px;
+    position: relative;
+    transition: transform 0.3s ease;
+}
+
+.faq-icon-indicator::before,
+.faq-icon-indicator::after {
+    content: '';
+    position: absolute;
+    background-color: #64748b;
+    transition: transform 0.3s ease, background-color 0.2s;
+}
+
+/* Vertical line */
+.faq-icon-indicator::before {
+    top: 3px;
+    left: 9px;
+    width: 2px;
+    height: 14px;
+}
+
+/* Horizontal line */
+.faq-icon-indicator::after {
+    top: 9px;
+    left: 3px;
+    width: 14px;
+    height: 2px;
+}
+
+/* Active Open FAQ styling changes */
+.faq-item.active .faq-question-text {
+    color: #005a9c;
+}
+
+/* When active, hide vertical line to turn plus into minus */
+.faq-item.active .faq-icon-indicator {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-icon-indicator::before {
+    transform: scaleY(0);
+}
+
+.faq-item.active .faq-icon-indicator::before,
+.faq-item.active .faq-icon-indicator::after {
+    background-color: #005a9c;
+}
+
+/* Accordion Panel */
+.faq-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+}
+
+.faq-item.active .faq-panel {
+    max-height: 1000px; /* Standard fallback height to trigger animation */
+    transition: max-height 0.5s cubic-bezier(1, 0, 1, 0);
+}
+
+.faq-panel-content {
+    padding: 0 8px 18px 8px;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+}

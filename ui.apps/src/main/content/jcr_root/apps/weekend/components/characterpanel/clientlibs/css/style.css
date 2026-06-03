@@ -1,0 +1,44 @@
+.character-card {
+    min-width: 180px;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.character-card:hover {
+    transform: scale(1.05);
+}
+
+.character-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.character-card {
+    width: 180px;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.character-card img {
+    width: 180px;
+    height: 220px;
+    object-fit: contain;
+    background-color: #f0f0f0;
+    display: block;
+}
+
+.character-card h3 {
+    margin: 10px 8px 4px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.character-card p {
+    margin: 0 8px 12px;
+    font-size: 13px;
+    color: #555;
+}

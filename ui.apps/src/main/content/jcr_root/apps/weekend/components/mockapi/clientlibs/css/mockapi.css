@@ -1,0 +1,198 @@
+/* Mock API Users Directory Styles */
+.mock-api-container {
+    margin: 30px 0;
+    font-family: 'Inter', sans-serif;
+    background: #fcfdfe;
+    border: 1px solid #eef2f6;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+}
+
+/* Header section */
+.mock-api-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+
+.mock-api-header-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.mock-api-source-badge {
+    font-size: 11px;
+    font-weight: 600;
+    color: #0284c7;
+    background: #f0f9ff;
+    padding: 6px 12px;
+    border-radius: 30px;
+    border: 1px solid #e0f2fe;
+}
+
+/* Error alert box */
+.mock-api-error-alert {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    color: #b91c1c;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* Search Box container */
+.mock-api-search-wrapper {
+    position: relative;
+    margin-bottom: 28px;
+}
+
+.mock-api-search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px 20px 14px 48px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: 1.5px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.mock-api-search-input:focus {
+    border-color: #0284c7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
+.mock-api-search-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+/* Cards Grid */
+.mock-api-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+/* Single User Profile Card */
+.mock-api-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
+}
+
+.mock-api-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+    border-color: #0284c7;
+}
+
+/* Card Header */
+.mock-api-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+}
+
+.mock-api-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+}
+
+.mock-api-card-title-group h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.mock-api-company {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card Body Details */
+.mock-api-detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+.mock-api-detail-item:last-child {
+    margin-bottom: 0;
+}
+
+.mock-api-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.mock-api-val {
+    color: #334155;
+    font-weight: 600;
+    text-decoration: none;
+    word-break: break-all;
+    max-width: 70%;
+    text-align: right;
+}
+
+a.mock-api-val {
+    color: #0284c7;
+    transition: color 0.15s ease-in-out;
+}
+
+a.mock-api-val:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+/* No results state screen */
+.mock-api-no-results {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px dashed #cbd5e1;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+}
