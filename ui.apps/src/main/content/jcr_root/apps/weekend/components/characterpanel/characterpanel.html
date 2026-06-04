@@ -5,24 +5,43 @@
 
 <sly data-sly-use.model="com.weekend.core.models.CharacterPanelModel"/>
 
-<div class="character-panel"
-     data-sly-test="${model.characters}"
-     data-sly-list.item="${model.characters}">
-
-    <div class="character-card">
-
-        <img
-                src="${item.valueMap.fileReference @ context='uri'}"
-                loading="lazy"
-                alt="${item.valueMap.characterName @ context='html'}">
-
-        <h3>${item.valueMap.characterName @ context='html'}</h3>
-
-        <p>${item.valueMap.realName @ context='html'}</p>
-
+<div class="character-panel-wrapper" data-sly-test="${model.characters}">
+    <!-- Interactive Search Bar -->
+    <div class="character-search-container">
+        <input type="text" class="character-search-input" placeholder="Search characters by name or actor..." />
+        <span class="character-search-icon">🔍</span>
     </div>
 
+    <!-- Cards Grid -->
+    <div class="character-panel" data-sly-list.item="${model.characters}">
+        <div class="character-card" data-image="${item.valueMap.fileReference @ context='uri'}" data-name="${item.valueMap.characterName @ context='html'}" data-actor="${item.valueMap.realName @ context='html'}">
+            <img src="${item.valueMap.fileReference @ context='uri'}" loading="lazy" alt="${item.valueMap.characterName @ context='html'}">
+            <h3>${item.valueMap.characterName @ context='html'}</h3>
+            <p>${item.valueMap.realName @ context='html'}</p>
+        </div>
+    </div>
+
+    <!-- No results banner -->
+    <div class="character-no-results" style="display: none;">
+        <p>No characters match your search query.</p>
+    </div>
+
+    <!-- Interactive Modal Popup Overlay -->
+    <div class="character-modal" id="characterModal">
+        <div class="character-modal-content">
+            <span class="character-modal-close" id="characterModalClose">&times;</span>
+            <div class="character-modal-body">
+                <div class="modal-image-wrapper">
+                    <img id="modalImage" src="" alt="" />
+                </div>
+                <h2 id="modalName"></h2>
+                <div class="modal-actor-badge">Real Identity</div>
+                <p id="modalActor"></p>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 
 
