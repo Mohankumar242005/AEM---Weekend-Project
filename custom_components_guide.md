@@ -8,7 +8,7 @@ This guide provides a comprehensive technical overview of the custom AEM compone
 
 The diagram below illustrates the unified MVC-based execution flow shared by all standard custom components in this project:
 
-![Custom Components Architecture Flow Diagram](file:///c:/Users/Project1/weekend/custom_components_flow.png)
+![Custom Components Architecture Flow Diagram](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_components_flow_1780385105020.png)
 
 ### Core Lifecycle Steps:
 1. **Configuration**: The author enters properties in the dialog. AEM saves these under the JCR resource node.
@@ -26,13 +26,17 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Sling Model**: [CustomTabsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/CustomTabsModel.java)
 *   **Properties Stored**:
     *   `tabs` (Multifield child resource): Stores individual list elements containing `tabTitle` and `tabContent`.
-*   **How it Works**:
-    1. The HTL template loops over `model.tabs` twice: once to draw headers with `data-tab-index`, and once to draw contents.
-    2. The JS script ([customtabs.js](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/customtabs/clientlibs/js/customtabs.js)) binds click event listeners to toggle the `active` styling classes.
-*   **Related Core Component**: `core/wcm/components/tabs/v1/tabs`
-*   **Core vs. Custom Comparison**:
-    *   *Core Tabs*: Acts as a layout container. Authors drag-and-drop entirely separate components inside each tab.
-    *   *Custom Tabs*: Maps a text-based composite multifield list. Ideal for simple text articles.
+
+#### Flow Diagram
+![Custom Tabs Request and Interactive Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_tabs_flow_1780287459986.png)
+
+#### Detailed Flow Explanation:
+1. **Authoring (JCR)**: The author configures tab items (titles and text contents) in the multifield dialog. AEM saves these as children under the current JCR node (`/jcr:content/root/container/customtabs/tabs/item_1`, `item_2`).
+2. **Model Adaptation**: During page request, the Sling Model is instantiated and retrieves the `tabs` child resources, preparing them as a list of Java DTO objects.
+3. **HTL Rendering**: The HTL template loops over this Java list twice:
+   * First loop generates the tab navigation bar (`<button class="tab-button" data-tab-index="0">Tab Title</button>`).
+   * Second loop generates the corresponding content panels (`<div class="tab-panel" data-tab-panel-index="0">Tab Content</div>`).
+4. **Interactive JS Action**: Once the HTML loads in the browser, the clientlib JS binds a click listener to the tab buttons. Clicking a button reads `data-tab-index`, hides all other panels, and applies the `active` styling class only to the matching panel.
 
 ---
 
@@ -42,11 +46,16 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Properties Stored**:
     *   `parentPath` (Pathbrowser): Path to the parent page.
     *   `limit` (Integer): Maximum number of sub-pages.
-*   **How it Works**:
-    1. The Sling Model adapts `ResourceResolver` to AEM's `PageManager` API.
-    2. It calls `parentPage.listChildren()` to traverse sub-pages.
-    3. It extracts Title, Description, and Path, storing them as a list of `PageItem` objects rendered by HTL.
-*   **Related Core Component**: `core/wcm/components/list/v2/list`
+
+#### Flow Diagram
+![Child Page List Request Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/childpagelist_flow_1779873408700.png)
+
+#### Detailed Flow Explanation:
+1. **Configuration**: The author configures the parent AEM path (e.g. `/content/weekend/us/en`) and a limit of child links to display.
+2. **PageManager API Query**: The Sling Model adapts `ResourceResolver` to AEM's `PageManager` class. It fetches the parent page resource.
+3. **Traversing Children**: The Model calls `parentPage.listChildren()` to fetch the child sub-pages. It iterates through the iterator, fetching each child page's title, description, and path.
+4. **List Truncation**: The iteration is capped by the JCR configured `limit` property.
+5. **HTML Generation**: HTL receives the list of page items and compiles standard HTML anchor links (`<a href="/content/weekend/us/en/child.html">Child Title</a>`) server-side.
 
 ---
 
@@ -55,9 +64,15 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Sling Model**: [CharacterPanelModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/CharacterPanelModel.java)
 *   **Properties Stored**:
     *   `characters` (Multifield child resource): Stores hero profiles (`characterName`, `realName`, `fileReference`).
-*   **How it Works**:
-    1. The model retrieves the `./characters` node list.
-    2. The HTL loops over the list, reading properties directly via `${item.properties.characterName}`.
+
+#### Flow Diagram
+![Character Panel Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_components_flow_1780385105020.png)
+
+#### Detailed Flow Explanation:
+1. **JCR Data Node**: Character items are authored via multifield and saved into JCR sub-nodes.
+2. **Direct Mapping**: The Model uses Sling annotations to read JCR properties and map details (Names, Identity, Images) to Java objects.
+3. **Sightly compilation**: HTL reads the properties and generates card containers.
+4. **CSS presentation**: Premium styling transforms hover scales, shadows, and spacing.
 
 ---
 
@@ -66,9 +81,15 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Sling Model**: [TeamGalleryModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/TeamGalleryModel.java)
 *   **Properties Stored**:
     *   `galleryTitle` and `members` multifield list.
-*   **How it Works**:
-    1. The model maps `./members` directly into a typed `List<MemberItem>` array in RAM.
-    2. HTL loops through the members list to construct a visual profile grid of cards.
+
+#### Flow Diagram
+![Team Gallery Memory Mapping Diagram](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/memory_flow_diagram_1780383467481.png)
+
+#### Detailed Flow Explanation:
+1. **JCR Node Storage**: Profiles are stored as JCR child nodes representing team members.
+2. **Memory Mapping**: The Model maps the JCR properties into `List<MemberItem>` array elements in memory.
+3. **Sightly compilation**: Sightly templates loop over the memory list, outputting individual cards.
+4. **CSS styling**: Scoped styling classes structure grid rows and layout columns.
 
 ---
 
@@ -85,11 +106,16 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Location**: [mockapi](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapi)
 *   **Sling Model**: [MockApiModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiModel.java)
 *   **Properties Stored**: `apiEndpoint` (String), `limit` (Integer).
-*   **How it Works**:
-    1. When AEM receives the page request, the Sling Model is instantiated.
-    2. The Model calls the API directly from the server using Java `HttpClient`.
-    3. Jackson parses and recursively flattens the JSON response, and HTL compiles the cards completely server-side.
-    4. Optional clientlib JS ([mockapi.js](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapi/clientlibs/js/mockapi.js)) handles input text search filtering locally.
+
+#### Flow Diagram
+![Mock API Direct Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/mockapi_flow_diagram_1780381943043.png)
+
+#### Detailed Flow Explanation:
+1. **JCR Settings**: Author inputs apiEndpoint URL and Limit properties.
+2. **Server GET Call**: The Sling Model executes `init()`, maps configuration values, and performs a direct server-to-server call to the Mock API.
+3. **Jackson Parsing & Flattening**: The JSON array response is parsed, recursively flattened into a key-value properties list, and the title/subtitle are dynamically resolved.
+4. **HTL Rendering**: HTML structure is rendered on AEM before sending the page.
+5. **Browser Search**: Client JS filters cards dynamically in the browser.
 
 ---
 
@@ -97,11 +123,16 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Location**: [mockapiproxy](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapiproxy)
 *   **Servlet**: [MockApiProxyServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiProxyServlet.java)
 *   **Properties Stored**: `title` (String), `apiEndpoint` (String), `limit` (Integer).
-*   **How it Works**:
-    1. AEM immediately serves the page HTML containing a loading spinner.
-    2. Once loaded, clientlib JS ([mockapiproxy.js](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapiproxy/clientlibs/js/mockapiproxy.js)) triggers an AJAX fetch request to the local servlet path.
-    3. The servlet queries the external API, limits the records, and returns JSON.
-    4. Browser JS parses the JSON, flattens it, and dynamically injects the HTML cards.
+
+#### Flow Diagram
+![Mock API Servlet Proxy Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/servlet_flow_diagram_1779698537297.png)
+
+#### Detailed Flow Explanation:
+1. **Instant Page Shell**: AEM serves HTML page with loading indicators immediately.
+2. **Browser AJAX Request**: JavaScript clientlib executes `fetch('/content/.../mockapiproxy.users.json')`.
+3. **Servlet Interceptor**: The OSGi Servlet captures request, reads current JCR resource property mappings, and runs Java backend fetching logic.
+4. **Response Delivery**: Servlet limits JSON array elements and streams JSON payload back.
+5. **Browser Render**: JS flattens properties, maps title/subtitle, and replaces loading spinner with card grid.
 
 ---
 
@@ -110,15 +141,20 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 *   **Servlet**: [MockApiNoJsServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiNoJsServlet.java)
 *   **Sling Model**: [MockApiNoJsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiNoJsModel.java)
 *   **Properties Stored**: `title` (String), `apiEndpoint` (String), `limit` (Integer).
-*   **How it Works**:
-    1. During page load, the Sling Model is instantiated.
-    2. The Model copies auth cookies and triggers an internal loopback GET request to its associated Sling Servlet.
-    3. The servlet retrieves raw mock API data, applies JCR limits, and responds with JSON.
-    4. The Sling Model captures this JSON response, flattens it, and exposes it to [mockapinojs.html](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapinojs/mockapinojs.html) to render cards server-side with zero client JS.
+
+#### Flow Diagram
+*(Uses the loopback request architecture detailed in Section 3)*
+
+#### Detailed Flow Explanation:
+1. **Model Binding**: Sling Model binds on page load.
+2. **Header Copies**: Model retrieves incoming browser headers (Cookies/Authorization) and binds them.
+3. **Loopback Fetch**: Model calls local servlet endpoint internally (`scheme://host:port + JCRPath + ".users.json"`).
+4. **Servlet processing**: Servlet calls external Mock API, applies JCR limits, and responds.
+5. **Sightly compilation**: Model flattens the loopback JSON and HTL renders cards server-side.
 
 ---
 
-## 3. Integration Patterns request Flow Comparison
+## 3. Integration Patterns Request Flow Comparison
 
 Below is the visual overview comparing the request flow and rendering cycles of the three integration patterns:
 
