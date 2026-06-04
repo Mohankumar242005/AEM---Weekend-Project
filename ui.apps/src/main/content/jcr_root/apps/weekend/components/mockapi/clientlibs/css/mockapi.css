@@ -2,11 +2,11 @@
 .mock-api-container {
     margin: 30px 0;
     font-family: 'Inter', sans-serif;
-    background: #fcfdfe;
-    border: 1px solid #eef2f6;
+    background: #0f172a; /* Slate 900 */
+    border: 1px solid rgba(56, 189, 248, 0.15); /* Sky blue subtle outline */
     border-radius: 16px;
     padding: 28px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Header section */
@@ -16,33 +16,34 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    border-bottom: 2px solid #f1f5f9;
+    border-bottom: 1.5px solid rgba(255, 255, 255, 0.08);
     padding-bottom: 16px;
     margin-bottom: 24px;
 }
 
 .mock-api-header-section h2 {
     font-size: 22px;
-    font-weight: 700;
-    color: #0f172a;
+    font-weight: 800;
+    color: #f8fafc; /* Light slate text */
     margin: 0;
+    letter-spacing: -0.5px;
 }
 
 .mock-api-source-badge {
     font-size: 11px;
     font-weight: 600;
-    color: #0284c7;
-    background: #f0f9ff;
+    color: #38bdf8; /* Sky 400 */
+    background: rgba(56, 189, 248, 0.08);
     padding: 6px 12px;
     border-radius: 30px;
-    border: 1px solid #e0f2fe;
+    border: 1px solid rgba(56, 189, 248, 0.2);
 }
 
 /* Error alert box */
 .mock-api-error-alert {
-    background-color: #fef2f2;
-    border: 1px solid #fee2e2;
-    color: #b91c1c;
+    background-color: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #fca5a5;
     padding: 16px;
     border-radius: 8px;
     font-size: 14px;
@@ -61,16 +62,16 @@
     padding: 14px 20px 14px 48px;
     font-size: 14px;
     border-radius: 10px;
-    border: 1.5px solid #cbd5e1;
-    background: #ffffff;
-    color: #334155;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    background: #1e293b; /* Slate 800 */
+    color: #ffffff;
     outline: none;
     transition: all 0.2s ease-in-out;
 }
 
 .mock-api-search-input:focus {
-    border-color: #0284c7;
-    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
 }
 
 .mock-api-search-icon {
@@ -92,20 +93,19 @@
 
 /* Single User Profile Card */
 .mock-api-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: #1e293b; /* Slate 800 */
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
 }
 
 .mock-api-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
-    border-color: #0284c7;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+    border-color: #38bdf8;
 }
 
 /* Card Header */
@@ -113,7 +113,7 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    border-bottom: 1px solid #f1f5f9;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     padding-bottom: 14px;
     margin-bottom: 14px;
 }
@@ -122,28 +122,28 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
+    background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
     color: #ffffff;
     font-size: 18px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(2, 132, 199, 0.15);
+    box-shadow: 0 4px 10px rgba(56, 189, 248, 0.15);
 }
 
 .mock-api-card-title-group h3 {
     margin: 0 0 4px 0;
     font-size: 16px;
     font-weight: 700;
-    color: #1e293b;
+    color: #ffffff;
 }
 
 .mock-api-company {
     margin: 0;
     font-size: 12px;
     font-weight: 600;
-    color: #64748b;
+    color: #94a3b8;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -162,13 +162,15 @@
 }
 
 .mock-api-label {
-    color: #64748b;
-    font-weight: 500;
+    color: #60a5fa; /* Tech blue */
+    font-weight: 600;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
 }
 
 .mock-api-val {
-    color: #334155;
+    color: #34d399; /* Emerald 400 */
     font-weight: 600;
+    font-family: 'Fira Code', 'Courier New', Courier, monospace;
     text-decoration: none;
     word-break: break-all;
     max-width: 70%;
@@ -176,23 +178,25 @@
 }
 
 a.mock-api-val {
-    color: #0284c7;
+    color: #facc15; /* Yellow link color */
     transition: color 0.15s ease-in-out;
 }
 
 a.mock-api-val:hover {
-    color: #1d4ed8;
+    color: #f59e0b;
     text-decoration: underline;
 }
+
 
 /* No results state screen */
 .mock-api-no-results {
     text-align: center;
     padding: 40px 20px;
-    background: #f8fafc;
+    background: #1e293b;
     border-radius: 8px;
-    border: 1px dashed #cbd5e1;
-    color: #64748b;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
     font-size: 14px;
     font-weight: 500;
 }
+

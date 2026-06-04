@@ -1,74 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const wrapper = document.querySelector(".character-panel-wrapper");
-    if (!wrapper) {
-        return;
-    }
+    // Select all Character Panel instances to support multiple components on the same page
+    const wrappers = document.querySelectorAll(".character-panel-wrapper");
+    
+    wrappers.forEach(wrapper => {
+        // Prevent duplicate initialization
+        if (wrapper.dataset.characterpanelInitialized) {
+            return;
+        }
 
-    const searchInput = wrapper.querySelector(".character-search-input");
-    const cards = wrapper.querySelectorAll(".character-card");
-    const noResults = wrapper.querySelector(".character-no-results");
+        const cards = wrapper.querySelectorAll(".character-card");
+        const modal = wrapper.querySelector(".character-modal");
+        const modalClose = wrapper.querySelector(".character-modal-close");
+        const modalImg = wrapper.querySelector("#modalImage");
+        const modalName = wrapper.querySelector("#modalName");
+        const modalActor = wrapper.querySelector("#modalActor");
 
-    // Modal elements
-    const modal = wrapper.querySelector("#characterModal");
-    const modalClose = wrapper.querySelector("#characterModalClose");
-    const modalImg = wrapper.querySelector("#modalImage");
-    const modalName = wrapper.querySelector("#modalName");
-    const modalActor = wrapper.querySelector("#modalActor");
+        // Modal Details Popup functionality
+        cards.forEach(card => {
+            card.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const image = card.getAttribute("data-image");
+                const name = card.getAttribute("data-name");
+                const actor = card.getAttribute("data-actor");
 
-    // 1. Search filter functionality
-    if (searchInput) {
-        searchInput.addEventListener("input", () => {
-            const query = searchInput.value.toLowerCase().trim();
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const name = (card.getAttribute("data-name") || "").toLowerCase();
-                const actor = (card.getAttribute("data-actor") || "").toLowerCase();
-
-                if (name.includes(query) || actor.includes(query)) {
-                    card.style.display = "";
-                    visibleCount++;
-                } else {
-                    card.style.display = "none";
+                if (modal && modalImg && modalName && modalActor) {
+                    modalImg.src = image || "";
+                    modalImg.alt = name || "";
+                    modalName.textContent = name || "";
+                    modalActor.textContent = actor || "";
+                    
+                    // Show modal with animation class
+                    modal.classList.add("show");
                 }
             });
-
-            if (noResults) {
-                noResults.style.display = (visibleCount === 0) ? "block" : "none";
-            }
         });
-    }
 
-    // 2. Modal Details Popup functionality
-    cards.forEach(card => {
-        card.addEventListener("click", () => {
-            const image = card.getAttribute("data-image");
-            const name = card.getAttribute("data-name");
-            const actor = card.getAttribute("data-actor");
-
-            if (modalImg && modalName && modalActor) {
-                modalImg.src = image || "";
-                modalImg.alt = name || "";
-                modalName.textContent = name || "";
-                modalActor.textContent = actor || "";
-                
-                // Show modal with animation class
-                modal.classList.add("show");
-            }
-        });
-    });
-
-    // Close Modal via 'X' button
-    if (modalClose) {
-        modalClose.addEventListener("click", () => {
-            modal.classList.remove("show");
-        });
-    }
-
-    // Close Modal when clicking outside the content panel
-    window.addEventListener("click", (event) => {
-        if (event.target === modal) {
-            modal.classList.remove("show");
+        // Close Modal via 'X' button
+        if (modalClose) {
+            modalClose.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                modal.classList.remove("show");
+            });
         }
+
+        // Close Modal when clicking outside the content panel
+        window.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.classList.remove("show");
+            }
+        });
+
+        wrapper.dataset.characterpanelInitialized = "true";
     });
-});
+});
+

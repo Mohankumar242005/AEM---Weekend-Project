@@ -43,10 +43,12 @@
         });
     }
 
-    // Run on DOM load
-    document.addEventListener("DOMContentLoaded", function () {
+    // Run on DOM load or immediately if DOM is already ready
+    if (document.readyState === "complete" || document.readyState === "interactive") {
         initializeMockApi();
-    });
+    } else {
+        document.addEventListener("DOMContentLoaded", initializeMockApi);
+    }
 
     // Run in AEM Authoring mode when components are edited or re-rendered
     if (window.Granite && window.Granite.author) {
@@ -57,3 +59,4 @@
         }
     }
 })();
+
