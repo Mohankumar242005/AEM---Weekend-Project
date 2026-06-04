@@ -2,15 +2,23 @@
 //== XF Footer style, used on page template
 
 footer.experiencefragment {
-    padding: .5em 1em;
-    border-top: 1px solid $color-foreground;
+    background-color: #0f172a; /* Slate 900 */
+    padding: 40px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8; /* Slate 400 */
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
 
-    @media (prefers-color-scheme: dark) {
-        border-color: $color-foreground-dark;
+    p {
+        margin: 4px 0;
     }
 
     .cmp-separator__horizontal-rule {
-        margin: 0;
+        margin: 15px auto;
         border: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        max-width: 200px;
     }
-}
+}

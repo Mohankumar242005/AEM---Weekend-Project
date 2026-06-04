@@ -1,1 +1,25 @@
-.cmp-form-button {}
+.cmp-form-button,
+button[type="submit"],
+.btn-primary {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #0f172a; /* Premium Dark slate button */
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.15);
+
+  &:hover {
+    background-color: #0ea5e9; /* Turns bright blue on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(14, 165, 233, 0.25);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
