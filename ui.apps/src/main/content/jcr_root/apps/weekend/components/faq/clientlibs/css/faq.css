@@ -125,19 +125,26 @@
 
 /* Accordion Panel */
 .faq-panel {
-    max-height: 0;
+    display: grid;
+    grid-template-rows: 0fr;
     overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0, 1, 0, 1);
+    transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .faq-item.active .faq-panel {
-    max-height: 1000px; /* Standard fallback height to trigger animation */
-    transition: max-height 0.5s cubic-bezier(1, 0, 1, 0);
+    grid-template-rows: 1fr;
 }
 
 .faq-panel-content {
-    padding: 0 8px 18px 8px;
+    min-height: 0;
+    padding: 0 8px 0 8px;
     font-size: 14px;
     color: #475569;
     line-height: 1.6;
+    transition: padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.faq-item.active .faq-panel-content {
+    padding: 0 8px 18px 8px;
+}
+
