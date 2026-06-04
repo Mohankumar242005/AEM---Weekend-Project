@@ -1,6 +1,6 @@
 # AEM Custom Components Architecture & Reference Guide
 
-This guide provides a comprehensive technical overview of the custom AEM components developed in the **Weekend Project**. It explains how each component operates from dialog authoring to frontend rendering, compares them with **AEM Core Components**, and details advanced server/client integration patterns.
+This guide provides a comprehensive technical overview of the custom AEM components developed in the **Weekend Project**. It explains how each component operates from dialog authoring to JCR storage, Sling Model parsing, and HTL presentation using detailed step-by-step logic and sample JCR configurations.
 
 ---
 
@@ -24,167 +24,317 @@ The diagram below illustrates the unified MVC-based execution flow shared by all
 ### A. Custom Tabs (`customtabs`)
 *   **Location**: [customtabs](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/customtabs)
 *   **Sling Model**: [CustomTabsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/CustomTabsModel.java)
-*   **Properties Stored**:
-    *   `tabs` (Multifield child resource): Stores individual list elements containing `tabTitle` and `tabContent`.
 
-#### Flow Diagram
-![Custom Tabs Request and Interactive Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_tabs_flow_1780287459986.png)
+#### Request and Interactive Flow Diagram
+![Custom Tabs Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_tabs_flow_1780287459986.png)
 
-#### Detailed Flow Explanation:
-1. **Authoring (JCR)**: The author configures tab items (titles and text contents) in the multifield dialog. AEM saves these as children under the current JCR node (`/jcr:content/root/container/customtabs/tabs/item_1`, `item_2`).
-2. **Model Adaptation**: During page request, the Sling Model is instantiated and retrieves the `tabs` child resources, preparing them as a list of Java DTO objects.
-3. **HTL Rendering**: The HTL template loops over this Java list twice:
-   * First loop generates the tab navigation bar (`<button class="tab-button" data-tab-index="0">Tab Title</button>`).
-   * Second loop generates the corresponding content panels (`<div class="tab-panel" data-tab-panel-index="0">Tab Content</div>`).
-4. **Interactive JS Action**: Once the HTML loads in the browser, the clientlib JS binds a click listener to the tab buttons. Clicking a button reads `data-tab-index`, hides all other panels, and applies the `active` styling class only to the matching panel.
+#### Detailed Flow Explanation (With 2 Sample Records):
+
+##### 1. JCR Storage (XML Representation)
+When the author enters 2 tab configurations in the dialog:
+*   *Tab 1:* Title = **"Service"**, Content = **"We offer AEM development."**
+*   *Tab 2:* Title = **"Pricing"**, Content = **"Contact us for a quote."**
+
+AEM creates a nested child resource node structure under the component's root node in the JCR:
+```xml
+<customtabs
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/customtabs">
+    <tabs jcr:primaryType="nt:unstructured">
+        <item0
+            jcr:primaryType="nt:unstructured"
+            tabTitle="Service"
+            tabContent="We offer AEM development."/>
+        <item1
+            jcr:primaryType="nt:unstructured"
+            tabTitle="Pricing"
+            tabContent="Contact us for a quote."/>
+    </tabs>
+</customtabs>
+```
+
+##### 2. Sling Model Fetch Mechanism
+*   **How it fetches:** The Sling Model reads the **entire child folder** (`tabs`) at once into memory rather than property-by-property.
+*   **Code Reference:** In `CustomTabsModel.java` (Line 18), the annotation `@ChildResource(name = "tabs")` resolves the folder. It then adapts the child nodes (`item0`, `item1`) into instances of the static inner class `TabItem` where individual properties are resolved:
+    ```java
+    @ChildResource(name = "tabs")
+    private List<TabItem> tabs; // Fetches entire node list at once
+    ```
+*   **Inner Class Property Resolution:** Inside `TabItem` (Line 31-35), properties are resolved one-by-one from each child node:
+    ```java
+    @ValueMapValue
+    private String tabTitle; // Resolves for item0 ("Service"), then item1 ("Pricing")
+    @ValueMapValue
+    private String tabContent; // Resolves for item0 ("We offer AEM..."), then item1 ("Contact us...")
+    ```
+
+##### 3. Data Format Exposed
+The Sling Model exposes the data to HTL as a typed Java List: `List<TabItem>`. Each `TabItem` is a structured Java Object containing getters for `tabTitle` and `tabContent`.
+
+##### 4. HTL Loop Processing
+The HTL template in [customtabs.html](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/customtabs/customtabs.html) reads the list from the getter `getTabs()` and loops through it:
+```html
+<div class="tab-buttons" data-sly-list.item="${model.tabs}">
+    <button class="tab-btn" data-tab-index="${itemList.index}">${item.tabTitle}</button>
+</div>
+```
+*   **How it iterates:** The loop runs **element-by-element**. Inside the loop, it evaluates individual properties (`item.tabTitle`) sequentially for each tab item to generate the buttons, and repeats the loop to draw the content panels.
 
 ---
 
 ### B. Child Page List (`childpagelist Component`)
 *   **Location**: [childpagelist Component](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/childpagelist%20Component)
 *   **Sling Model**: [ChildPageListModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/ChildPageListModel.java)
-*   **Properties Stored**:
-    *   `parentPath` (Pathbrowser): Path to the parent page.
-    *   `limit` (Integer): Maximum number of sub-pages.
 
-#### Flow Diagram
-![Child Page List Request Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/childpagelist_flow_1779873408700.png)
+#### Request Flow Diagram
+![Child Page List Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/childpagelist_flow_1779873408700.png)
 
-#### Detailed Flow Explanation:
-1. **Configuration**: The author configures the parent AEM path (e.g. `/content/weekend/us/en`) and a limit of child links to display.
-2. **PageManager API Query**: The Sling Model adapts `ResourceResolver` to AEM's `PageManager` class. It fetches the parent page resource.
-3. **Traversing Children**: The Model calls `parentPage.listChildren()` to fetch the child sub-pages. It iterates through the iterator, fetching each child page's title, description, and path.
-4. **List Truncation**: The iteration is capped by the JCR configured `limit` property.
-5. **HTML Generation**: HTL receives the list of page items and compiles standard HTML anchor links (`<a href="/content/weekend/us/en/child.html">Child Title</a>`) server-side.
+#### Detailed Flow Explanation (With 2 Sample Pages):
+
+##### 1. JCR Storage (XML Representation)
+The author configures the component dialog with:
+*   `parentPath` = **"/content/weekend/us/en"**
+*   `limit` = **2**
+
+AEM stores these properties directly on the component's node:
+```xml
+<childpagelist
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/childpagelist"
+    parentPath="/content/weekend/us/en"
+    limit="{Long}2"/>
+```
+The referenced parent page has two child pages in the JCR tree structure:
+*   `/content/weekend/us/en/about` (`jcr:title="About Us"`, `jcr:description="Learn about our team."`)
+*   `/content/weekend/us/en/contact` (`jcr:title="Contact Us"`, `jcr:description="Get in touch."`)
+
+##### 2. Sling Model Fetch Mechanism
+*   **How it fetches:** The Sling Model uses annotations to bind the configuration properties, then uses the AEM `PageManager` Java API to dynamically query the repository child pages.
+*   **Code Reference:** In `ChildPageListModel.java` (Line 20-24), `@ValueMapValue` binds the parameters:
+    ```java
+    @ValueMapValue
+    private String parentPath; // Injects "/content/weekend/us/en"
+    @ValueMapValue
+    private Integer limit; // Injects 2
+    ```
+*   **API Traversal:** During `init()` (Line 38-44), it opens the parent page and traverses the children **one-by-one** using an iterator:
+    ```java
+    Page parentPage = pageManager.getPage(parentPath);
+    Iterator<Page> iterator = parentPage.listChildren(); // Gets iterator
+    ```
+    The model loops over the iterator, fetches page titles/descriptions, constructs `PageItem` objects, and breaks the loop once `limit` (2) is reached.
+
+##### 3. Data Format Exposed
+The model exposes a list of custom Page items: `List<PageItem>`. Each `PageItem` contains string attributes: `title`, `description`, and `path`.
+
+##### 4. HTL Loop Processing
+HTL iterates over the list element-by-element to output the child page link directory:
+```html
+<ul data-sly-list.page="${model.childPages}">
+    <li>
+        <a href="${page.path}.html">${page.title}</a>
+        <p>${page.description}</p>
+    </li>
+</ul>
+```
 
 ---
 
-### C. Character Panel (`characterpanel`)
-*   **Location**: [characterpanel](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/characterpanel)
-*   **Sling Model**: [CharacterPanelModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/CharacterPanelModel.java)
-*   **Properties Stored**:
-    *   `characters` (Multifield child resource): Stores hero profiles (`characterName`, `realName`, `fileReference`).
-
-#### Flow Diagram
-![Character Panel Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/custom_components_flow_1780385105020.png)
-
-#### Detailed Flow Explanation:
-1. **JCR Data Node**: Character items are authored via multifield and saved into JCR sub-nodes.
-2. **Direct Mapping**: The Model uses Sling annotations to read JCR properties and map details (Names, Identity, Images) to Java objects.
-3. **Sightly compilation**: HTL reads the properties and generates card containers.
-4. **CSS presentation**: Premium styling transforms hover scales, shadows, and spacing.
-
----
-
-### D. Team Gallery (`teamgallery`)
+### C. Team Gallery (`teamgallery`)
 *   **Location**: [teamgallery](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/teamgallery)
 *   **Sling Model**: [TeamGalleryModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/TeamGalleryModel.java)
-*   **Properties Stored**:
-    *   `galleryTitle` and `members` multifield list.
 
-#### Flow Diagram
-![Team Gallery Memory Mapping Diagram](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/memory_flow_diagram_1780383467481.png)
+#### Request and Memory Mapping Flow Diagram
+![Team Gallery Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/memory_flow_diagram_1780383467481.png)
 
-#### Detailed Flow Explanation:
-1. **JCR Node Storage**: Profiles are stored as JCR child nodes representing team members.
-2. **Memory Mapping**: The Model maps the JCR properties into `List<MemberItem>` array elements in memory.
-3. **Sightly compilation**: Sightly templates loop over the memory list, outputting individual cards.
-4. **CSS styling**: Scoped styling classes structure grid rows and layout columns.
+#### Detailed Flow Explanation (With 2 Sample Members):
 
----
+##### 1. JCR Storage (XML Representation)
+The author configures:
+*   `galleryTitle` = **"Our Team"**
+*   *Member 1:* Full Name = **"Alice Smith"**, Role = **"Tech Lead"**, Image = **"/content/dam/weekend/alice.jpg"**
+*   *Member 2:* Full Name = **"Bob Jones"**, Role = **"Developer"**, Image = **"/content/dam/weekend/bob.jpg"**
 
-### E. Card Component (`card`)
-*   **Location**: [card](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/card)
-*   **Properties Stored**: `title` and `textarea`.
-*   **How it Works**:
-    *   This is an **HTML-only component** (no Java backing class).
-    *   HTL reads variables directly from the JCR properties map: `${properties.title}`.
+This JCR structure is created:
+```xml
+<teamgallery
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/teamgallery"
+    galleryTitle="Our Team">
+    <members jcr:primaryType="nt:unstructured">
+        <item0
+            jcr:primaryType="nt:unstructured"
+            fullName="Alice Smith"
+            role="Tech Lead"
+            imagePath="/content/dam/weekend/alice.jpg"/>
+        <item1
+            jcr:primaryType="nt:unstructured"
+            fullName="Bob Jones"
+            role="Developer"
+            imagePath="/content/dam/weekend/bob.jpg"/>
+    </members>
+</teamgallery>
+```
 
----
+##### 2. Sling Model Fetch Mechanism
+*   **How it fetches:** The `galleryTitle` property is fetched individually, while the `members` composite sub-nodes are mapped as a single Child Resource list containing individual elements.
+*   **Code Reference:** In `TeamGalleryModel.java` (Line 15-20):
+    ```java
+    @ValueMapValue
+    private String galleryTitle; // Fetches "Our Team"
+    @ChildResource(name = "members")
+    private List<MemberItem> members; // Fetches the entire folder at once
+    ```
+    For each member node, properties are mapped to `MemberItem` fields:
+    ```java
+    @ValueMapValue
+    private String fullName; // "Alice Smith" / "Bob Jones"
+    @ValueMapValue
+    private String role; // "Tech Lead" / "Developer"
+    ```
 
-### F. Mock API Direct (`mockapi`)
-*   **Location**: [mockapi](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapi)
-*   **Sling Model**: [MockApiModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiModel.java)
-*   **Properties Stored**: `apiEndpoint` (String), `limit` (Integer).
+##### 3. Data Format Exposed
+Exposes `String` (galleryTitle) and `List<MemberItem>` (members) where each `MemberItem` is a DTO holding member properties.
 
-#### Flow Diagram
-![Mock API Direct Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/mockapi_flow_diagram_1780381943043.png)
-
-#### Detailed Flow Explanation:
-1. **JCR Settings**: Author inputs apiEndpoint URL and Limit properties.
-2. **Server GET Call**: The Sling Model executes `init()`, maps configuration values, and performs a direct server-to-server call to the Mock API.
-3. **Jackson Parsing & Flattening**: The JSON array response is parsed, recursively flattened into a key-value properties list, and the title/subtitle are dynamically resolved.
-4. **HTL Rendering**: HTML structure is rendered on AEM before sending the page.
-5. **Browser Search**: Client JS filters cards dynamically in the browser.
-
----
-
-### G. Mock API Servlet Proxy (`mockapiproxy`)
-*   **Location**: [mockapiproxy](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapiproxy)
-*   **Servlet**: [MockApiProxyServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiProxyServlet.java)
-*   **Properties Stored**: `title` (String), `apiEndpoint` (String), `limit` (Integer).
-
-#### Flow Diagram
-![Mock API Servlet Proxy Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/servlet_flow_diagram_1779698537297.png)
-
-#### Detailed Flow Explanation:
-1. **Instant Page Shell**: AEM serves HTML page with loading indicators immediately.
-2. **Browser AJAX Request**: JavaScript clientlib executes `fetch('/content/.../mockapiproxy.users.json')`.
-3. **Servlet Interceptor**: The OSGi Servlet captures request, reads current JCR resource property mappings, and runs Java backend fetching logic.
-4. **Response Delivery**: Servlet limits JSON array elements and streams JSON payload back.
-5. **Browser Render**: JS flattens properties, maps title/subtitle, and replaces loading spinner with card grid.
-
----
-
-### H. Mock API Loopback (`mockapinojs`)
-*   **Location**: [mockapinojs](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapinojs)
-*   **Servlet**: [MockApiNoJsServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiNoJsServlet.java)
-*   **Sling Model**: [MockApiNoJsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiNoJsModel.java)
-*   **Properties Stored**: `title` (String), `apiEndpoint` (String), `limit` (Integer).
-
-#### Flow Diagram
-*(Uses the loopback request architecture detailed in Section 3)*
-
-#### Detailed Flow Explanation:
-1. **Model Binding**: Sling Model binds on page load.
-2. **Header Copies**: Model retrieves incoming browser headers (Cookies/Authorization) and binds them.
-3. **Loopback Fetch**: Model calls local servlet endpoint internally (`scheme://host:port + JCRPath + ".users.json"`).
-4. **Servlet processing**: Servlet calls external Mock API, applies JCR limits, and responds.
-5. **Sightly compilation**: Model flattens the loopback JSON and HTL renders cards server-side.
+##### 4. HTL Loop Processing
+HTL parses the Title first, then loops through the list element-by-element to output the card grid:
+```html
+<h2>${model.galleryTitle}</h2>
+<div class="gallery-grid" data-sly-list.member="${model.members}">
+    <div class="member-card">
+        <img src="${member.imagePath}" alt="${member.fullName}"/>
+        <h3>${member.fullName}</h3>
+        <p>${member.role}</p>
+    </div>
+</div>
+```
 
 ---
 
-## 3. Integration Patterns Request Flow Comparison
+## 3. API Integration Patterns Request Flow Comparison
 
 Below is the visual overview comparing the request flow and rendering cycles of the three integration patterns:
 
 ![AEM Integration Architecture Flows](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/api_flows_simplified_1780486859793.png)
 
-### The Three Flows Step-by-Step:
+---
 
-#### Flow 1: Direct Sling Model (`mockapi`)
-*   **Step 1: Dialog Config** — Author saves the API URL and Limit in JCR.
-*   **Step 2: Sling Model Binds** — Page load instantiates the Sling Model.
-*   **Step 3: Java Fetch** — The Sling Model calls the API directly from the server.
-*   **Step 4: JSON Parse** — The Sling Model flattens the returned JSON data.
-*   **Step 5: HTL Rendering** — HTL generates the HTML cards.
-*   **Step 6: HTML Response** — Complete HTML is sent directly to the Browser.
+### D. Mock API Direct (`mockapi`)
+*   **Location**: [mockapi](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapi)
+*   **Sling Model**: [MockApiModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiModel.java)
 
-#### Flow 2: Browser JS + Servlet Proxy (`mockapiproxy`)
-*   **Step 1: Page Load** — AEM sends the HTML page shell with a loading spinner.
-*   **Step 2: JS Trigger** — The component's Clientlib JS triggers a background fetch to AEM's local Servlet.
-*   **Step 3: Servlet Query** — The local AEM Servlet reads JCR configurations and queries the External API.
-*   **Step 4: JSON Response** — The Servlet returns the limited JSON back to the browser's JS.
-*   **Step 5: JS Render** — Browser JS flattens the JSON and injects the HTML cards dynamically.
+#### Flow Diagram
+![Mock API Direct Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/mockapi_flow_diagram_1780381943043.png)
 
-#### Flow 3: No-JS Loopback (`mockapinojs`)
-*   **Step 1: Model Binds** — The Sling Model binds on page request.
-*   **Step 2: Loopback Fetch** — The Sling Model copies credentials and requests the local AEM Servlet URL internally.
-*   **Step 3: Servlet Query** — The Servlet reads JCR configs, calls the External API, and retrieves raw data.
-*   **Step 4: JSON Response** — The Servlet returns the JSON stream to the Sling Model.
-*   **Step 5: JSON Parse** — The Sling Model flattens the loopback JSON.
-*   **Step 6: HTL Rendering** — HTL compiles the HTML cards server-side.
-*   **Step 7: HTML Response** — The Browser receives the completed HTML directly; no client-side JS is used.
+#### Detailed Flow Explanation (With 2 Sample Records):
+
+##### 1. JCR Storage (XML Representation)
+The author configures:
+*   `apiEndpoint` = **"https://jsonplaceholder.typicode.com/users"**
+*   `limit` = **2**
+
+```xml
+<mockapi
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/mockapi"
+    apiEndpoint="https://jsonplaceholder.typicode.com/users"
+    limit="{Long}2"/>
+```
+
+##### 2. Sling Model Fetch Mechanism
+*   **How it fetches:**
+    1. AEM parses JCR properties (`apiEndpoint` and `limit`) on page load.
+    2. The Model executes `init()`, maps these values, and initiates a server-to-server HTTP request using Java `HttpClient`.
+    3. The Model receives the raw API JSON array string:
+       `[{"id": 1, "name": "Leanne Graham", "email": "Sincere@april.biz"}, {"id": 2, "name": "Ervin Howell", "email": "Shanna@melissa.tv"}]`
+    4. Jackson `ObjectMapper` parses this JSON array. It iterates through the array elements, dynamically flattens all properties, and maps titles/subtitles heuristically.
+*   **Code Reference:** In `MockApiModel.java` (Line 81-83):
+      ```java
+      List<DynamicProperty> properties = new ArrayList<>();
+      flattenNode("", node, properties); // Flattens all nested objects recursively
+      ```
+
+##### 3. Data Format Exposed
+Exposes `List<DynamicCard>` containing Java objects where each object holds a `title` (resolved dynamically as "Leanne Graham"), `subtitle` ("Sincere@april.biz"), and a list of flattened attributes: `List<DynamicProperty>`.
+
+##### 4. HTL Loop Processing
+HTL iterates over the cards, and inside each card, iterates over its list of dynamic properties:
+```html
+<div class="mock-api-grid" data-sly-list.card="${model.cards}">
+    <div class="mock-api-card">
+        <h3>${card.title}</h3>
+        <div class="details" data-sly-list.prop="${card.properties}">
+            <span>${prop.key}: ${prop.value}</span>
+        </div>
+    </div>
+</div>
+```
+
+---
+
+### E. Mock API Servlet Proxy (`mockapiproxy`)
+*   **Location**: [mockapiproxy](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapiproxy)
+*   **Servlet**: [MockApiProxyServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiProxyServlet.java)
+
+#### Flow Diagram
+![Mock API Servlet Proxy Flow](file:///C:/Users/MohankumarM/.gemini/antigravity-ide/brain/08fa5e38-7a24-469a-abe5-8486744808dd/servlet_flow_diagram_1779698537297.png)
+
+#### Detailed Flow Explanation (With 2 Sample Records):
+
+##### 1. JCR Storage (XML Representation)
+The author configures:
+*   `title` = **"Users Proxy"**
+*   `apiEndpoint` = **"https://jsonplaceholder.typicode.com/users"**
+*   `limit` = **2**
+
+```xml
+<mockapiproxy
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/mockapiproxy"
+    title="Users Proxy"
+    apiEndpoint="https://jsonplaceholder.typicode.com/users"
+    limit="{Long}2"/>
+```
+
+##### 2. How it works (Differing from Sling Model)
+*   **AEM Server:** Instantly outputs the page HTML shell containing a loading spinner. The JCR path of the component `/content/.../mockapiproxy` is written as a data attribute (`data-resource-path`).
+*   **Browser (AJAX Request):** JavaScript fetches the Servlet:
+    `fetch('/content/.../mockapiproxy.users.json')`.
+*   **Servlet Execution:** The servlet interceptor triggers [MockApiProxyServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiProxyServlet.java).
+    1. The servlet reads `apiEndpoint` and `limit` from the JCR node dynamically using the request context:
+       `ValueMap properties = req.getResource().getValueMap();`
+    2. The servlet makes an HTTP request to the external endpoint.
+    3. The servlet parses the response in Java, truncates the array elements to the JCR `limit` (2), and writes the limited raw JSON string back to the browser:
+       `[{"id":1,"name":"Leanne Graham","email":"Sincere@april.biz"},{"id":2,"name":"Ervin Howell","email":"Shanna@melissa.tv"}]`
+*   **Browser (JS DOM Injection):** The clientlib JS receives the raw JSON array. It iterates through the array elements, flattens the properties dynamically in JavaScript, and constructs the HTML card markup in the browser, replacing the loading spinner. **HTL is bypassed completely during card rendering.**
+
+---
+
+### F. Mock API Loopback (`mockapinojs`)
+*   **Location**: [mockapinojs](file:///c:/Users/Project1/weekend/ui.apps/src/main/content/jcr_root/apps/weekend/components/mockapinojs)
+*   **Servlet**: [MockApiNoJsServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiNoJsServlet.java)
+*   **Sling Model**: [MockApiNoJsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiNoJsModel.java)
+
+#### Detailed Flow Explanation (With 2 Sample Records):
+
+##### 1. JCR Storage (XML Representation)
+```xml
+<mockapinojs
+    jcr:primaryType="nt:unstructured"
+    sling:resourceType="weekend/components/mockapinojs"
+    title="No-JS Loopback"
+    apiEndpoint="https://jsonplaceholder.typicode.com/users"
+    limit="{Long}2"/>
+```
+
+##### 2. How it works
+1.  **Page Request:** The user requests the page. AEM initializes [MockApiNoJsModel.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/models/MockApiNoJsModel.java).
+2.  **Loopback Request:** The model constructs the loopback URL pointing back to the servlet:
+    `http://localhost:4502/content/.../mockapinojs.users.json`.
+    It copies the request's authentication cookies and headers to execute a GET call back to the AEM engine internally.
+3.  **Servlet Processing:** The request routes to [MockApiNoJsServlet.java](file:///c:/Users/Project1/weekend/core/src/main/java/com/weekend/core/servlets/MockApiNoJsServlet.java). The servlet reads `apiEndpoint` and `limit` from JCR, calls the external API, truncates the array to 2 elements, and returns the JSON payload back to the Sling Model.
+4.  **Model Processing:** The Sling Model receives the JSON string. Jackson parses it, flattens all properties recursively, and compiles a `List<DynamicCard>` in AEM memory.
+5.  **HTL Rendering:** HTL receives the cards list from the model and loops through it element-by-element to output the HTML. The browser receives the finished HTML cards with zero client-side JS executing.
 
 ---
 
